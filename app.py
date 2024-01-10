@@ -26,7 +26,7 @@ session = Session(bind=engine)
 #################################################
 # Flask Setup
 #################################################
-app = Flask(__name__)
+app = flask(__name__)
 
 
 #################################################
@@ -47,7 +47,9 @@ def homepage():
 def precipitation():
 
     # Query for precipitation last 12 months
-    precipitation_data = session.query(measurement.date, measurement.prcp).filter(measurement.date > '2016-08-22').order_by(measurement.date).all()
+    precipitation_data = session.query(measurement.date, func.avg(measurement.prcp)).\
+                    group_by(measurement.date).all()
+
 
     #En Session
     session.close()
@@ -83,21 +85,20 @@ def station():
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-
     #Most active station from past year
 
     past_year = dt.date(2017,8,23) - dt.timedelta(days = 365)
 
     # Retrieve info of most active station
 
-    active_station = session.query(measurement.date, measurement.tobs).filter(measurement.station == 'USC00519281').\
+    tobs_station = session.query(measurement.date, measurement.tobs).filter(measurement.station == 'USC00519281').\
                         filter(measurement.date >= past_year).all()
 
     #close session
     session.close()
 
     tobs_list = []
-    for date, tobs, station in active_station:
+    for date, tobs, station in tobs_station:
         tobs_dict = {}
         tobs_dict["date"] = date
         tobs_dict["tobs"] = tobs
