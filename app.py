@@ -46,21 +46,21 @@ def homepage():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
 
-# Query for precipitation last 12 months
-precipitation_query = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date > '2016-08-22').order_by(measurement.date).all()
+    # Query for precipitation last 12 months
+    precipitation_data = session.query(measurement.date, measurement.prcp).filter(measurement.date > '2016-08-22').order_by(measurement.date).all()
 
-#En Session
-session.close()
+    #En Session
+    session.close()
 
-#Put precipitation query into a dictionary
-precipitation_list = []
-for date, prcp in precipitation_query:
-    precipitation_dict = {}
-    precipitation_dict["date"] = date
-    precipitation_dict["prcp"] = prcp
-    precipitation_list.append(precipitation_list)
-#jsonify
-return jsonify(precipitation_list)
+    #Put precipitation query into a dictionary
+    precipitation_list = []
+    for date, prcp in precipitation_data:
+        precipitation_dict = {}
+        precipitation_dict["date"] = date
+        precipitation_dict["prcp"] = prcp
+        precipitation_list.append(precipitation_list)
+    #jsonify
+    return jsonify(precipitation_list)
 
 @app.route("/api/v1.0/stations")
 def station():
@@ -68,48 +68,48 @@ def station():
     station_query = session.query(station.station, station.id).all()
 #close session
 
-session.close()
-#Station query put into dictionary 
+    session.close()
+    #Station query put into dictionary 
 
-station_list = []
-for station, id in station_query:
-    station_dict ={}
-    stataion_dict['station'] = station
-    station_dict['id'] = id
-    station_list.append(station_dict)
-#jsonify
-return jsonify (stations_list)
+    station_list = []
+    for station, id in station_query:
+        station_dict ={}
+        station_dict['station'] = station
+        station_dict['id'] = id
+        station_list.append(station_dict)
+    #jsonify
+    return jsonify (station_list)
 
 
 @app.route("/api/v1.0/tobs")
 def tobs():
 
-#Most active station from past year
+    #Most active station from past year
 
-past_year = dt.date(2017,8,23) - dt.timedelta(days = 365)
+    past_year = dt.date(2017,8,23) - dt.timedelta(days = 365)
 
-# Retrieve info of most active station
+    # Retrieve info of most active station
 
-active_station = session.query(measurement.date, measurement.tobs).filter(measurement.station == 'USC00519281').\
-                    filter(meaasurement.date >= past_year).all()
+    active_station = session.query(measurement.date, measurement.tobs).filter(measurement.station == 'USC00519281').\
+                        filter(measurement.date >= past_year).all()
 
-#close session
-session.close()
+    #close session
+    session.close()
 
-tobs_list = []
-for date, tobs, station in active_station:
-    tobs_dict = {}
-    tobs_dict["date"] = date
-    tobs_dict["tobs"] = tobs
-    tobs_dict["station"] = station
-tobs_list.append(tobs_dict)
-#jsonify
-return jsonify(tobs)
+    tobs_list = []
+    for date, tobs, station in active_station:
+        tobs_dict = {}
+        tobs_dict["date"] = date
+        tobs_dict["tobs"] = tobs
+        tobs_dict["station"] = station
+    tobs_list.append(tobs_dict)
+    #jsonify
+    return jsonify(tobs)
 
 @app.route("/api/v1.0/<start>")
 def start(start):
 
-#session start
+    session.close()
 
 @app.route("/api/v1.0/<start>/<end>")
 def range_date(start,end):
@@ -117,7 +117,7 @@ def range_date(start,end):
     
     
 #End session
-session.close()
+    session.close()
 
 if __name__ == '__main__':
     app.run(debug=true)
